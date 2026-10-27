@@ -5,7 +5,7 @@ import { RevealOnScroll } from "@/components/layout/RevealOnScroll";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SmoothScroll } from "@/components/layout/SmoothScroll";
 import { profile } from "@/content/profile";
-import { siteUrl } from "@/lib/site";
+import { absoluteUrl } from "@/lib/site";
 import "./globals.css";
 
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
@@ -14,12 +14,15 @@ const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"]
 // whose licence lets the repo be public. next/font self-hosts it at build time.
 const figtree = Figtree({ variable: "--font-figtree", subsets: ["latin"] });
 
+const home = absoluteUrl();
 const title = `${profile.name}: ML, retrieval and representation learning`;
 const description =
   "Portfolio of Varun Shirbhayye, M.Tech student in Data Science & AI at IIT Bhilai: research, projects, skills, experience and achievements.";
 
 export const metadata: Metadata = {
-  ...(siteUrl ? { metadataBase: new URL(siteUrl), alternates: { canonical: "/" } } : {}),
+  // The base includes any sub-path (GitHub Pages project sites), so the
+  // canonical link and preview image resolve inside the site.
+  ...(home ? { metadataBase: new URL(home), alternates: { canonical: "/" } } : {}),
   // The tab reads "Name | Portfolio"; link previews keep the longer title.
   title: { default: `${profile.name} | Portfolio`, template: `%s | ${profile.name}` },
   description,
@@ -31,6 +34,10 @@ export const metadata: Metadata = {
     description,
     siteName: profile.name,
     locale: "en_IN",
+    // Rendered by og.png/route.tsx.
+    images: [
+      { url: "/og.png", width: 1200, height: 630, type: "image/png", alt: `${profile.name}: ${profile.descriptor}` },
+    ],
   },
   twitter: { card: "summary_large_image", title, description },
 };

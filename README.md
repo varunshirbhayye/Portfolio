@@ -43,7 +43,7 @@ src/
     layout.tsx               Fonts, metadata, nav, footer, smooth scroll, reveal on scroll
     page.tsx                 Home page: all sections in order
     globals.css              Design tokens and component styles
-    opengraph-image.tsx      1200×630 social preview, rendered at build time
+    og.png/route.tsx         1200×630 social preview, rendered at build time to og.png
     sitemap.ts, robots.ts, icon.svg, not-found.tsx
   components/
     layout/                  Nav (with the phone menu), SiteFooter, SmoothScroll (Lenis), RevealOnScroll

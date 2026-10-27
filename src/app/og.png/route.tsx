@@ -2,13 +2,14 @@ import { ImageResponse } from "next/og";
 import { profile } from "@/content/profile";
 
 export const dynamic = "force-static";
-export const alt = `${profile.name}: ${profile.descriptor}`;
-export const size = { width: 1200, height: 630 };
-export const contentType = "image/png";
 
-// Rendered once at build time. Uses the built-in OG font to avoid a network
-// fetch during builds.
-export default function OpengraphImage() {
+const size = { width: 1200, height: 630 };
+
+// The link-preview image, rendered once at build time to out/og.png (wired up
+// in layout.tsx). A route named like a file rather than the opengraph-image
+// convention, whose extensionless output GitHub Pages serves as a download.
+// Uses the built-in OG font to avoid a network fetch during builds.
+export function GET() {
   return new ImageResponse(
     (
       <div
