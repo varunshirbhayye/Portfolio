@@ -1,0 +1,1342 @@
+@import "tailwindcss";
+
+/* Warm ink, paper-white type and one lamplight amber. Dark only, by design. */
+
+:root {
+  --ink: #0e0b08;
+  --ink-panel: #14100b;
+  --paper: #f0e7d6;
+  --paper-soft: rgba(240, 231, 214, 0.92);
+  --paper-dim: rgba(240, 231, 214, 0.8);
+  --paper-faint: rgba(240, 231, 214, 0.55);
+  --hairline: rgba(240, 231, 214, 0.16);
+  --hairline-soft: rgba(240, 231, 214, 0.1);
+  --hairline-strong: rgba(240, 231, 214, 0.32);
+  /* A shade under paper, for surfaces that repeat (the skill tiles). */
+  --paper-muted: #e3d8c5;
+  --amber: #d9a353;
+  /* Text over the scene carries its own shadow. */
+  --shade: rgba(6, 4, 2, 0.95);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --rail: clamp(24px, 5vw, 72px);
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-ink: var(--ink);
+  --color-paper: var(--paper);
+  --color-amber: var(--amber);
+  --font-sans: var(--font-figtree), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+
+@layer base {
+  html {
+    scroll-padding-top: 5rem;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100dvh;
+    background: var(--ink);
+    color: var(--paper);
+    font-family: var(--font-sans);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::selection {
+    background: var(--amber);
+    color: var(--ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--paper);
+    outline-offset: 3px;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  em {
+    font-style: normal;
+    color: var(--amber);
+  }
+}
+
+/* Lenis */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis:not(.lenis-autoToggle).lenis-stopped {
+  overflow: clip;
+}
+
+.skip-link {
+  position: fixed;
+  left: 16px;
+  top: 12px;
+  z-index: 100;
+  padding: 10px 18px;
+  background: var(--paper);
+  color: var(--ink);
+  font-weight: 500;
+  border-radius: 2px;
+  transform: translateY(-160%);
+}
+
+.skip-link:focus {
+  transform: none;
+}
+
+/* ─── Nav ─── */
+
+.nav {
+  position: fixed;
+  inset-inline: 0;
+  top: 0;
+  z-index: 40;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 20px clamp(20px, 3.33vw, 48px);
+  transition:
+    background 300ms ease,
+    box-shadow 300ms ease;
+}
+
+/* Over the scene the scrim does the work; past it the bar gets frosted ink
+   and a hairline, so nothing reads through it. */
+.nav--solid {
+  background: rgba(14, 11, 8, 0.84);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 1px 0 var(--hairline-soft);
+}
+
+.nav__logo-link {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 10px;
+  min-width: 0;
+  color: var(--paper);
+  text-decoration: none;
+  text-shadow: 0 1px 6px rgba(6, 4, 2, 0.8);
+}
+
+.nav__name {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+.nav__logo-suffix {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--paper-dim);
+  white-space: nowrap;
+}
+
+.nav__right,
+.nav__links {
+  display: flex;
+  align-items: center;
+  gap: clamp(16px, 2.2vw, 32px);
+}
+
+.nav__link {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--paper);
+  text-decoration: none;
+  text-shadow: 0 1px 8px rgba(6, 4, 2, 0.9);
+  transition: color 150ms;
+}
+
+.nav__link:hover,
+.nav__link[aria-current] {
+  color: var(--amber);
+}
+
+/* Shown below 1024px, where the inline links give way to a menu. */
+.nav__toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--hairline-strong);
+  border-radius: 2px;
+  background: rgba(14, 11, 8, 0.35);
+  color: var(--paper);
+  cursor: pointer;
+  transition:
+    border-color 150ms,
+    color 150ms;
+}
+
+.nav__toggle:hover {
+  border-color: var(--amber);
+  color: var(--amber);
+}
+
+.nav__menu {
+  position: absolute;
+  inset-inline: 0;
+  top: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 8px clamp(20px, 3.33vw, 48px) 20px;
+  /* Opaque: even a little translucency lets the hero headline read through. */
+  background: var(--ink);
+  box-shadow: 0 1px 0 var(--hairline-soft);
+}
+
+.nav__menu-link {
+  padding: 14px 0;
+  border-bottom: 1px solid var(--hairline-soft);
+  font-size: 1.15rem;
+  font-weight: 500;
+  color: var(--paper);
+  text-decoration: none;
+}
+
+.nav__menu-link:last-child {
+  border-bottom: 0;
+}
+
+.nav__menu-link[aria-current] {
+  color: var(--amber);
+}
+
+/* ─── The paper button: the one CTA treatment ─── */
+
+.paper-btn {
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+  padding: 15px 30px;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  font: inherit;
+  font-size: clamp(1rem, 1.15vw, 1.1rem);
+  font-weight: 500;
+  line-height: 1.2;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  will-change: transform;
+  transition:
+    background 150ms,
+    color 150ms,
+    border-color 150ms,
+    transform 150ms ease;
+}
+
+.paper-btn--paper {
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 0 2px 10px rgba(6, 4, 2, 0.45);
+}
+
+.paper-btn--paper:hover {
+  background: var(--amber);
+}
+
+.paper-btn--ghost {
+  background: rgba(14, 11, 8, 0.35);
+  color: var(--paper);
+  border-color: var(--hairline-strong);
+}
+
+.paper-btn--ghost:hover {
+  border-color: var(--amber);
+  color: var(--amber);
+}
+
+.paper-btn--small {
+  padding: 10px 20px;
+  font-size: 15px;
+}
+
+.paper-btn__glare {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 180ms;
+  pointer-events: none;
+}
+
+/* ═══ FIRST SCREEN: ABOUT ═══ */
+
+.hero {
+  position: relative;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 110px clamp(24px, 6vw, 96px) 120px;
+}
+
+.scene {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  background: var(--ink);
+}
+
+/* Layers overhang the scene (BLEED in Scene.tsx) so the parallax never
+   exposes an edge. */
+.scene__layer {
+  position: absolute;
+  inset: -4%;
+  will-change: transform;
+}
+
+.scene__layer canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.scene__layer[data-layer="city"] canvas,
+.scene__layer[data-layer="lights"] canvas {
+  filter: blur(0.45px);
+}
+
+.scene__sky {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 70% 30% at 70% 72%, rgba(90, 62, 40, 0.42), transparent 70%),
+    linear-gradient(180deg, #03050a 0%, #070b16 30%, #0e1322 52%, #1b1a22 64%, #2b2119 74%, #120e0a 100%);
+}
+
+.scene__scrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.45;
+  background:
+    linear-gradient(180deg, rgba(8, 6, 4, 0.82) 0%, rgba(8, 6, 4, 0.24) 20%, rgba(8, 6, 4, 0) 38%),
+    radial-gradient(ellipse 120% 90% at 50% 55%, rgba(8, 6, 4, 0.22) 0%, rgba(8, 6, 4, 0.66) 100%);
+}
+
+/* The bottom of the scene dissolves into the next screen. */
+.hero::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 1;
+  height: 22vh;
+  background: linear-gradient(180deg, rgba(14, 11, 8, 0) 0%, var(--ink) 100%);
+  pointer-events: none;
+}
+
+.hero__content {
+  position: relative;
+  z-index: 2;
+  max-width: 1360px;
+  text-align: center;
+}
+
+/* A pool of shade under the copy so the scene still glows around it. */
+.hero__content::before {
+  content: "";
+  position: absolute;
+  inset: -18% -22%;
+  z-index: -1;
+  background: radial-gradient(ellipse 50% 50% at 50% 50%, rgba(6, 4, 2, 0.55) 0%, rgba(6, 4, 2, 0.28) 55%, transparent 80%);
+  pointer-events: none;
+}
+
+.hero__name {
+  font-weight: 700;
+  font-size: clamp(3rem, 9vw, 7.6rem);
+  line-height: 0.98;
+  letter-spacing: -0.04em;
+  color: var(--paper);
+  text-shadow: 0 4px 42px rgba(6, 4, 2, 0.85);
+}
+
+.hero__lead {
+  max-width: 680px;
+  margin: 1.4rem auto 0;
+  font-size: clamp(1.15rem, 1.6vw, 1.45rem);
+  font-weight: 500;
+  line-height: 1.45;
+  color: var(--paper);
+  text-shadow: 0 1px 14px var(--shade);
+}
+
+/* Justified like the rest of the copy; the last line stays centred. */
+.hero__lead,
+.hero__intro {
+  text-align: justify;
+  text-align-last: center;
+}
+
+/* Full width of the hero, so the intro sits on two lines on a laptop screen. */
+.hero__intro {
+  margin: 1rem auto 0;
+  font-size: clamp(0.98rem, 1.15vw, 1.08rem);
+  line-height: 1.65;
+  color: var(--paper-dim);
+  text-shadow: 0 1px 12px var(--shade);
+}
+
+.hero__links {
+  margin: 2.2rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px;
+}
+
+/* Profile links: ghost slips with the brand mark on a paper tile that
+   lights amber on hover, and an arrow that leans out toward the link. */
+.social-btn {
+  gap: 14px;
+  padding: 8px 20px 8px 8px;
+  text-align: left;
+  /* Denser than the plain ghost so the caption reads over the city lights. */
+  background: rgba(14, 11, 8, 0.6);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+.social-btn__icon {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 2px;
+  background: var(--paper);
+  color: var(--ink);
+  transition: background 150ms;
+}
+
+.social-btn__icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.social-btn:hover .social-btn__icon {
+  background: var(--amber);
+}
+
+.social-btn__text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 7.5em;
+}
+
+.social-btn__caption {
+  font-family: var(--font-mono);
+  font-size: 0.72em;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  color: var(--paper-dim);
+  transition: color 150ms;
+}
+
+.social-btn:hover .social-btn__caption {
+  color: var(--amber);
+}
+
+.social-btn__arrow {
+  flex-shrink: 0;
+  opacity: 0.6;
+  transition:
+    transform 250ms var(--ease-out),
+    opacity 150ms;
+}
+
+.social-btn:hover .social-btn__arrow {
+  opacity: 1;
+  transform: translate(3px, -3px);
+}
+
+.hero__scroll {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 30px;
+  z-index: 2;
+  width: max-content;
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.32em;
+  text-indent: 0.32em;
+  text-transform: uppercase;
+  color: var(--paper);
+  text-decoration: none;
+  animation: scroll-nudge 2.6s ease-in-out infinite;
+}
+
+.hero__scroll::after {
+  content: "";
+  width: 2px;
+  height: 28px;
+  border-radius: 1px;
+  background: linear-gradient(180deg, var(--amber), transparent);
+}
+
+@keyframes scroll-nudge {
+  50% {
+    translate: 0 6px;
+  }
+}
+
+/* The copy rises in once, on load. */
+.hero__content > * {
+  animation: rise 900ms var(--ease-out) both;
+}
+
+.hero__content > :nth-child(2) {
+  animation-delay: 90ms;
+}
+
+.hero__content > :nth-child(3) {
+  animation-delay: 180ms;
+}
+
+.hero__content > :nth-child(4) {
+  animation-delay: 240ms;
+}
+
+.hero__content > :nth-child(n + 5) {
+  animation-delay: 320ms;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+
+/* ═══ SECTIONS ═══ */
+
+.page {
+  position: relative;
+  padding: clamp(48px, 5vw, 64px) var(--rail);
+}
+
+.page__inner {
+  max-width: 1160px;
+  margin-inline: auto;
+}
+
+.page__title {
+  font-weight: 700;
+  font-size: clamp(2.2rem, 4.4vw, 4rem);
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  color: var(--paper);
+}
+
+.page__list {
+  margin: clamp(36px, 4.5vw, 56px) 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 24px;
+}
+
+.page__block + .page__block {
+  margin-top: clamp(56px, 7vw, 96px);
+}
+
+.sub-label {
+  margin: clamp(36px, 4.5vw, 56px) 0 22px;
+  font-family: var(--font-mono);
+  font-size: 25px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--amber);
+}
+
+.label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--amber);
+}
+
+/* Schools side by side, each a card with the campus photo on top. */
+.schools {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.school {
+  overflow: hidden;
+  background: var(--ink-panel);
+  border: 1px solid var(--hairline);
+  border-radius: 12px;
+}
+
+/* The college logo, centred on a paper panel like the skill tiles. */
+.school__logo {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 2 / 1;
+  overflow: hidden;
+  border-bottom: 1px solid var(--hairline);
+  background: var(--paper-muted);
+}
+
+.school__logo img {
+  width: auto;
+  height: 68%;
+  transition: transform 700ms var(--ease-out);
+}
+
+@media (hover: hover) {
+  .school:hover .school__logo img {
+    transform: scale(1.05);
+  }
+}
+
+/* Post graduation or graduation, in a strip above the photo. */
+.school__level {
+  padding: 16px clamp(22px, 2.6vw, 34px);
+  border-bottom: 1px solid var(--hairline);
+  color: var(--paper);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.school__placeholder {
+  position: absolute;
+  inset: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed var(--hairline-strong);
+  border-radius: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  color: var(--paper-faint);
+}
+
+.school__text {
+  padding: clamp(22px, 2.6vw, 34px);
+}
+
+.school__name {
+  margin-top: 10px;
+  font-weight: 700;
+  font-size: clamp(1.35rem, 2vw, 1.8rem);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--paper);
+}
+
+.school__degree {
+  margin-top: 12px;
+  font-size: clamp(1.08rem, 1.3vw, 1.22rem);
+  font-weight: 500;
+  color: var(--paper);
+}
+
+.school__field {
+  margin-top: 2px;
+  font-size: clamp(1rem, 1.2vw, 1.12rem);
+  color: var(--paper-soft);
+}
+
+.school__grade {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--hairline-soft);
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--paper-dim);
+}
+
+.panel {
+  background: var(--ink-panel);
+  border: 1px solid var(--hairline);
+  border-radius: 12px;
+  padding: clamp(24px, 3.2vw, 44px);
+}
+
+.panel__kicker {
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--amber);
+}
+
+.panel__title {
+  margin-top: 10px;
+  font-weight: 700;
+  font-size: clamp(1.7rem, 2.7vw, 2.5rem);
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+  color: var(--paper);
+}
+
+.panel__sub {
+  margin-top: 8px;
+  font-size: clamp(1.1rem, 1.4vw, 1.3rem);
+  font-weight: 500;
+  color: var(--paper-soft);
+}
+
+.panel__full {
+  margin-top: 6px;
+  font-size: clamp(1rem, 1.2vw, 1.12rem);
+  font-weight: 500;
+  color: var(--amber);
+}
+
+.panel__title--long {
+  font-size: clamp(1.3rem, 2vw, 1.8rem);
+  line-height: 1.2;
+}
+
+.panel__authors {
+  margin-top: 12px;
+  font-size: 1rem;
+  color: var(--paper-soft);
+}
+
+.panel__authors strong {
+  font-weight: 700;
+  color: var(--paper);
+}
+
+.panel__venue {
+  margin-top: 4px;
+  font-size: 0.95rem;
+  color: var(--paper-dim);
+}
+
+/* Main content on the left, a logo or key numbers on the right. */
+.panel__body {
+  margin-top: 22px;
+  padding-top: 22px;
+  border-top: 1px solid var(--hairline);
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
+  align-items: start;
+  gap: clamp(20px, 3vw, 48px);
+}
+
+.panel__body > :only-child {
+  grid-column: 1 / -1;
+}
+
+.panel__body--list {
+  padding-top: 8px;
+}
+
+/* Fills its column: the whole box, or the left side when numbers sit beside it. */
+.panel__text {
+  font-size: clamp(1rem, 1.2vw, 1.12rem);
+  line-height: 1.65;
+  text-align: justify;
+  color: var(--paper-soft);
+}
+
+.panel__points {
+  margin-top: 14px;
+}
+
+.panel__metrics {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.panel__metrics div {
+  display: flex;
+  flex-direction: column-reverse;
+}
+
+.panel__metrics dd {
+  margin: 0;
+  font-weight: 700;
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
+  line-height: 1;
+  letter-spacing: -0.025em;
+  color: var(--paper);
+}
+
+.panel__metrics dt {
+  margin-top: 6px;
+  font-size: 0.92rem;
+  color: var(--paper-dim);
+}
+
+/* Bottom row: what it was built with, and where to find it. */
+.panel__foot {
+  margin-top: 18px;
+  padding-top: 20px;
+  border-top: 1px solid var(--hairline);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 16px 32px;
+}
+
+.panel__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  font-weight: 500;
+  color: var(--paper);
+  white-space: nowrap;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-decoration-color: var(--hairline-strong);
+  text-underline-offset: 4px;
+  transition:
+    color 150ms,
+    text-decoration-color 150ms;
+}
+
+.panel__link:hover {
+  color: var(--amber);
+  text-decoration-color: var(--amber);
+}
+
+.panel__doi {
+  text-align: right;
+}
+
+.panel__doi-id {
+  margin-top: 4px;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--paper-dim);
+  overflow-wrap: anywhere;
+}
+
+/* The company logo sits beside the highlights. */
+.job__logo {
+  align-self: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.job__logo img {
+  width: min(100%, 220px);
+  height: auto;
+}
+
+.plus-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.plus-list li {
+  font-size: clamp(1rem, 1.15vw, 1.1rem);
+  line-height: 1.75;
+  text-align: justify;
+  color: var(--paper-soft);
+}
+
+.plus-list li::before {
+  content: "+ ";
+  color: var(--amber);
+}
+
+.plus-list--rows li {
+  display: flex;
+  align-items: baseline;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--hairline-soft);
+  line-height: 1.55;
+}
+
+.plus-list--rows li:last-child {
+  border-bottom: 0;
+}
+
+.plus-list--rows li::before {
+  content: "+";
+  flex: none;
+  width: 1.6em;
+  font-family: var(--font-mono);
+}
+
+.slash-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: clamp(0.98rem, 1.1vw, 1.06rem);
+  color: var(--paper-soft);
+}
+
+/* Trailing slashes, so a wrapped line starts with an item, not a slash. */
+.slash-list li:not(:last-child)::after {
+  content: "/";
+  margin: 0 0.6em;
+  color: var(--amber);
+}
+
+/* ═══ SKILLS ═══ */
+
+.skills__hint {
+  margin-top: 14px;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--paper-dim);
+}
+
+@media (hover: hover) {
+  .skills__hint--touch {
+    display: none;
+  }
+}
+
+@media (hover: none) {
+  .skills__hint--hover {
+    display: none;
+  }
+}
+
+/* Two grid columns per card of the widest row, so every row can sit centred
+   under the one above. Skills.tsx sets the counts and each card's cell. */
+.pyramid {
+  --stagger: 45ms;
+  max-width: 880px;
+  margin: clamp(36px, 4.5vw, 56px) auto 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+  gap: clamp(8px, 1vw, 14px);
+}
+
+.skill {
+  grid-row: var(--row);
+  grid-column: var(--col) / span 2;
+  aspect-ratio: 3 / 2;
+  perspective: 800px;
+}
+
+.skill__card {
+  position: relative;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 700ms var(--ease-out);
+}
+
+.skill__face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+/* The logo side is a slip of paper, like the buttons, a shade darker so the
+   whole pyramid doesn't outshine the page. */
+.skill__front {
+  background: var(--paper-muted);
+  box-shadow: 0 2px 10px rgba(6, 4, 2, 0.45);
+}
+
+/* Sized by height alone: the logos are square, and next/image warns when CSS
+   changes one of its width/height attributes but not the other. */
+.skill__front img {
+  width: auto;
+  height: 56%;
+}
+
+.skill__back {
+  padding: 6px;
+  background: var(--ink-panel);
+  border: 1px solid var(--hairline);
+  font-size: clamp(0.72rem, 1.15vw, 1rem);
+  font-weight: 500;
+  line-height: 1.2;
+  text-align: center;
+  hyphens: auto;
+  overflow-wrap: anywhere;
+  color: var(--paper);
+  transform: rotateY(180deg);
+}
+
+@media (hover: hover) {
+  .skill:hover .skill__card {
+    transform: rotateY(180deg);
+  }
+}
+
+/* Tapped, on touch screens (FlipDeck). */
+.skill[data-flipped] .skill__card {
+  transform: rotateY(180deg);
+}
+
+/* Keyboard: the pyramid is one Tab stop, and focusing it shows every name. */
+.pyramid:focus-visible {
+  outline-offset: 10px;
+  border-radius: 12px;
+}
+
+.pyramid:focus-visible .skill__card {
+  transform: rotateY(180deg);
+}
+
+/* The opening flip (FlipDeck): names until the pyramid is in view, then the
+   cards turn to their logos one after another, top first. */
+.pyramid[data-intro="hold"] .skill__card {
+  transform: rotateY(180deg);
+  transition: none;
+}
+
+.pyramid[data-intro="play"] .skill__card {
+  transition-delay: calc(var(--i) * var(--stagger));
+}
+
+/* ═══ ACHIEVEMENTS ═══ */
+
+.awards {
+  margin: clamp(36px, 4.5vw, 56px) 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.award {
+  display: flex;
+  flex-direction: column;
+  padding: clamp(22px, 2.2vw, 28px);
+  background: var(--ink-panel);
+  border: 1px solid var(--hairline);
+  border-radius: 12px;
+}
+
+.award__result {
+  margin-top: 14px;
+  font-weight: 700;
+  font-size: clamp(1.5rem, 2.1vw, 1.9rem);
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  color: var(--paper);
+}
+
+/* Event names sit on a common baseline at the foot of each card. */
+.award__event {
+  margin-top: auto;
+  padding-top: 20px;
+  font-size: 1rem;
+  line-height: 1.45;
+  color: var(--paper-soft);
+}
+
+.award__detail {
+  margin-top: 4px;
+  font-size: 0.9rem;
+  color: var(--paper-dim);
+}
+
+/* ═══ CONTACT ═══ */
+
+/* One lamplit card to close the page, glowing from the corner like the
+   social preview image. */
+.contact {
+  padding: clamp(32px, 5vw, 72px);
+  background:
+    radial-gradient(ellipse 70% 120% at 0% 100%, rgba(217, 140, 64, 0.16), transparent 70%),
+    var(--ink-panel);
+  border: 1px solid var(--hairline);
+  border-radius: 16px;
+}
+
+.contact__lead {
+  max-width: 560px;
+  margin-top: 18px;
+  font-size: clamp(1.05rem, 1.4vw, 1.25rem);
+  line-height: 1.55;
+  text-align: justify;
+  color: var(--paper-soft);
+}
+
+.contact__email {
+  display: inline-block;
+  margin-top: clamp(24px, 3vw, 36px);
+  font-weight: 700;
+  font-size: clamp(1.1rem, 4.6vw, 2.6rem);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--paper);
+  overflow-wrap: break-word;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-decoration-color: var(--hairline-strong);
+  text-underline-offset: 0.18em;
+  transition:
+    color 150ms,
+    text-decoration-color 150ms;
+}
+
+.contact__email:hover {
+  color: var(--amber);
+  text-decoration-color: var(--amber);
+}
+
+.contact__actions {
+  margin-top: clamp(28px, 3.5vw, 44px);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* ─── Reveal on scroll (RevealOnScroll) ─── */
+
+[data-reveal] {
+  transition:
+    opacity 800ms var(--ease-out),
+    transform 800ms var(--ease-out);
+}
+
+[data-reveal="hidden"] {
+  opacity: 0;
+  transform: translateY(18px);
+}
+
+/* Cards that enter together arrive one after another. */
+.award:nth-child(2),
+.school:nth-child(2) {
+  transition-delay: 90ms;
+}
+
+.award:nth-child(3) {
+  transition-delay: 180ms;
+}
+
+.award:nth-child(4) {
+  transition-delay: 270ms;
+}
+
+/* ─── Footer ─── */
+
+.footer {
+  border-top: 1px solid var(--hairline-soft);
+}
+
+.footer__inner {
+  box-sizing: content-box;
+  max-width: 1160px;
+  margin-inline: auto;
+  padding: 28px var(--rail);
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+}
+
+.footer__meta {
+  font-size: 0.92rem;
+  color: var(--paper-dim);
+}
+
+.footer__top {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.footer__link {
+  color: inherit;
+  text-decoration: none;
+  transition: color 150ms;
+}
+
+.footer__link:hover {
+  color: var(--amber);
+}
+
+/* ─── 404 ─── */
+
+.not-found {
+  min-height: 80dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 140px var(--rail) 80px;
+  text-align: center;
+}
+
+.not-found p {
+  color: var(--paper-dim);
+}
+
+/* ─── Responsive ─── */
+
+/* Six section links need a laptop's width; below that they move into the menu. */
+@media (max-width: 1023px) {
+  .nav__links {
+    display: none;
+  }
+
+  .nav__toggle {
+    display: inline-flex;
+  }
+
+  .awards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .nav__menu {
+    display: none;
+  }
+}
+
+@media (max-width: 767px) {
+  .schools,
+  .panel__body {
+    grid-template-columns: 1fr;
+  }
+
+  .panel__metrics {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 14px 28px;
+  }
+
+  .panel__doi {
+    text-align: left;
+  }
+
+  /* On phones the logo leads the box, small and left-aligned. */
+  .job__logo {
+    order: -1;
+    justify-content: flex-start;
+    padding: 18px 0 4px;
+  }
+
+  .job__logo img {
+    width: 120px;
+  }
+
+  /* Narrow justified lines need hyphenation, or the word gaps open up. Words
+     of six letters or more may break, leaving at least three before the
+     hyphen and two after. */
+  .hero__lead,
+  .hero__intro,
+  .panel__text,
+  .plus-list li,
+  .contact__lead {
+    hyphens: auto;
+    hyphenate-limit-chars: 6 3 2;
+  }
+}
+
+/* Too narrow for seven across: rows longer than four cards split in two. */
+@media (max-width: 679px) {
+  .pyramid {
+    max-width: 420px;
+    grid-template-columns: repeat(var(--cols-sm), minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .skill {
+    grid-row: var(--row-sm);
+    grid-column: var(--col-sm) / span 2;
+  }
+
+  .skill__back {
+    padding: 3px;
+    font-size: clamp(0.62rem, 3.1vw, 0.85rem);
+  }
+}
+
+@media (max-width: 559px) {
+  .awards {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .nav {
+    padding-inline: 16px;
+  }
+
+  .nav__logo-suffix {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero__content > *,
+  .hero__scroll {
+    animation: none;
+  }
+
+  /* Cards still turn over, without the spin. */
+  .skill__card {
+    transition: none;
+  }
+
+  .paper-btn {
+    transition:
+      background 150ms,
+      color 150ms,
+      border-color 150ms;
+  }
+}
